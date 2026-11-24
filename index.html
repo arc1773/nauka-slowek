@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Nauka słówek — niemiecki</title>
   <style>
     * {
@@ -103,8 +103,26 @@
     }
 
     @media (max-width: 480px) {
+      body {
+        min-height: 100dvh;
+      }
+
       main {
         padding: 24px;
+      }
+
+      #exercise {
+        padding-bottom: 72px;
+      }
+
+      #submit {
+        position: fixed;
+        left: 50%;
+        bottom: calc(var(--visual-viewport-bottom, 0px) + env(safe-area-inset-bottom) + 12px);
+        z-index: 10;
+        width: min(calc(100% - 48px), 432px);
+        margin: 0;
+        transform: translateX(-50%);
       }
     }
   </style>
