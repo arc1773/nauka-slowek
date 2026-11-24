@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nauka słówek — niemiecki</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: grid;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      place-items: center;
+      background: #f3f5f9;
+      color: #202536;
+      font: 16px/1.5 system-ui, sans-serif;
+    }
+
+    main {
+      width: min(100%, 480px);
+      padding: 32px;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 8px 30px #18213a12;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+    }
+
+    .progress {
+      margin: 0 0 28px;
+      color: #667085;
+    }
+
+    .hint {
+      margin: 12px 0;
+      color: #667085;
+      font-size: 0.9rem;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd1dc;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #536dfe;
+      outline: 3px solid #536dfe30;
+    }
+
+    .prompt {
+      margin: 0 0 16px;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border: 0;
+      border-radius: 8px;
+      background: #465cf5;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3549dc;
+    }
+
+    .feedback {
+      min-height: 28px;
+      margin: 16px 0 0;
+      font-weight: 600;
+    }
+
+    .feedback.correct {
+      color: #16803c;
+    }
+
+    .feedback.wrong {
+      color: #bd3030;
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Niemieckie słówka</h1>
+    <section id="setup">
+      <label for="category">Wybierz kategorię:</label>
+      <select id="category"></select>
+      <label for="mode">Wybierz tryb:</label>
+      <select id="mode">
+        <option value="study">Nauka</option>
+        <option value="test">Test (losowe słówka)</option>
+      </select>
+      <label for="pool-size">Rozmiar puli w nauce:</label>
+      <input id="pool-size" type="number" min="1" max="50" value="5" required>
+      <p class="hint">
+        Nauka utrzymuje ustawioną pulę słówek. Po poprawnej odpowiedzi słówko zostaje zastąpione nowym;
+        test wykorzysta losowo do 20 słówek z wybranego zakresu.
+        Ocena: 1 — poniżej 30%, 2 — od 30%, 3 — od 50%, 4 — od 75%, 5 — od 90%, 6 — 100%.
+      </p>
+      <button id="start" type="button">Zaczynamy</button>
+      <p class="feedback" id="setup-feedback" aria-live="polite"></p>
+    </section>
+    <section id="exercise" hidden>
+      <p class="progress" id="progress"></p>
+      <p class="prompt" id="prompt"></p>
+      <form id="answer-form">
+        <label for="answer">Wpisz po niemiecku:</label>
+        <input id="answer" name="answer" autocomplete="off" required>
+        <button id="submit" type="submit">Sprawdź</button>
+      </form>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+    </section>
+    <section id="result" hidden>
+      <h2 id="result-title"></h2>
+      <p id="result-details"></p>
+      <button id="restart" type="button">Wróć do wyboru</button>
+    </section>
+  </main>
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
