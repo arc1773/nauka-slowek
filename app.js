@@ -1,4 +1,5 @@
 const categorySelect = document.querySelector("#category");
+const selectedCount = document.querySelector("#selected-count");
 const modeSelect = document.querySelector("#mode");
 const poolSizeInput = document.querySelector("#pool-size");
 const setupSection = document.querySelector("#setup");
@@ -19,9 +20,14 @@ function updateVisualViewport() {
 
   const visibleBottom = window.innerHeight -
     (window.visualViewport.height + window.visualViewport.offsetTop);
+  const visibleHeight = window.visualViewport.height;
   document.documentElement.style.setProperty(
     "--visual-viewport-bottom",
     `${Math.max(0, visibleBottom)}px`
+  );
+  document.documentElement.style.setProperty(
+    "--visual-viewport-height",
+    `${visibleHeight}px`
   );
 }
 
@@ -41,13 +47,69 @@ let remainingWords = [];
 let masteredCount = 0;
 let lastAnswerCorrect = false;
 let studyWordCount = 0;
+let selectedWordCount = 0;
 
-categorySelect.add(new Option("Wszystkie kategorie", "*"));
+function addCategoryOption(title, value, checked = false) {
+  const label = document.createElement("label");
+  label.className = "category-option";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.value = value;
+  checkbox.checked = checked;
+
+  const text = document.createElement("span");
+  text.textContent = title;
+
+  label.append(checkbox, text);
+  categorySelect.append(label);
+}
+
+addCategoryOption("Wszystkie kategorie", "*", true);
 
 for (const [index, category] of vocabulary.entries()) {
   const wordCount = Object.keys(category.vocabulary).length;
-  categorySelect.add(new Option(`${category.title} (${wordCount})`, String(index)));
+  addCategoryOption(`${category.title} (${wordCount})`, String(index));
 }
+
+categorySelect.addEventListener("change", (event) => {
+  if (!event.target.matches("input[type='checkbox']")) return;
+
+  const allCheckbox = categorySelect.querySelector("input[value='*']");
+  if (event.target.value === "*" && event.target.checked) {
+    for (const checkbox of categorySelect.querySelectorAll("input")) {
+      checkbox.checked = checkbox === allCheckbox;
+    }
+    return;
+  }
+
+  if (event.target.value !== "*") allCheckbox.checked = false;
+
+  const checkedCategories = [...categorySelect.querySelectorAll("input:checked")]
+    .filter((checkbox) => checkbox.value !== "*");
+
+  if (checkedCategories.length === 0) allCheckbox.checked = true;
+  updateSelectedCount();
+});
+
+function getSelectedCategories() {
+  return [...categorySelect.querySelectorAll("input:checked")]
+    .map((checkbox) => checkbox.value);
+}
+
+function updateSelectedCount() {
+  const selectedCategories = getSelectedCategories();
+  const selectedWords = selectedCategories.length === 0 || selectedCategories.includes("*")
+    ? vocabulary.flatMap((category) => Object.values(category.vocabulary))
+    : selectedCategories.flatMap((categoryIndex) =>
+        Object.values(vocabulary[Number(categoryIndex)]?.vocabulary ?? {})
+      );
+
+  selectedCount.textContent =
+    `Wybranych słówek: ${selectedWords.length}`;
+}
+
+updateSelectedCount();
 
 function shuffle(words) {
   const shuffled = [...words];
@@ -60,12 +122,18 @@ function shuffle(words) {
   return shuffled;
 }
 
+function getProgressText() {
+  if (studyMode) {
+    return `Wybranych: ${selectedWordCount} · Pula: ${sessionWords.length} słówek · Opanowane: ${masteredCount}`;
+  }
+
+  return `Słówko ${currentIndex + 1} z ${sessionWords.length} · Wybranych: ${selectedWordCount} · Poprawnie: ${correctAnswers}`;
+}
+
 function showWord() {
   const [polishWord] = sessionWords[currentIndex];
   prompt.textContent = polishWord;
-  progress.textContent = studyMode
-    ? `Pula: ${sessionWords.length} słówek · Opanowane: ${masteredCount} · Wynik: ${correctAnswers}`
-    : `Słówko ${currentIndex + 1} z ${sessionWords.length} · Wynik: ${correctAnswers}`;
+  progress.textContent = getProgressText();
   feedback.textContent = "";
   feedback.className = "feedback";
   answerInput.value = "";
@@ -101,26 +169,29 @@ function finishSession() {
     const grade = getGrade(correctAnswers / sessionWords.length);
     resultTitle.textContent = `Ocena: ${grade}`;
     resultDetails.textContent =
-      `Poprawne odpowiedzi: ${correctAnswers} z ${sessionWords.length}.`;
+      `Wybranych słówek: ${selectedWordCount}. Poprawnie zgadnięte: ${correctAnswers} z ${sessionWords.length}.`;
     return;
   }
 
   resultTitle.textContent = "Koniec nauki!";
   resultDetails.textContent =
-    `Opanowane słówka: ${masteredCount} z ${studyWordCount}. Poprawne odpowiedzi: ${correctAnswers}.`;
+    `Wybranych słówek: ${selectedWordCount}. Opanowane słówka: ${masteredCount} z ${studyWordCount}.`;
 }
 
 document.querySelector("#start").addEventListener("click", () => {
-  const selectedCategory = categorySelect.value;
-  const availableWords = selectedCategory === "*"
+  const selectedCategories = getSelectedCategories();
+  const availableWords = selectedCategories.length === 0 || selectedCategories.includes("*")
     ? vocabulary.flatMap((category) => Object.entries(category.vocabulary))
-    : Object.entries(vocabulary[Number(selectedCategory)]?.vocabulary ?? {});
+    : selectedCategories.flatMap((categoryIndex) =>
+        Object.entries(vocabulary[Number(categoryIndex)]?.vocabulary ?? {})
+      );
 
   if (!availableWords || availableWords.length === 0) {
     setupFeedback.textContent = "W tej kategorii nie ma jeszcze słówek.";
     return;
   }
 
+  selectedWordCount = availableWords.length;
   testMode = modeSelect.value === "test";
   studyMode = modeSelect.value === "study";
   const shuffledWords = shuffle(availableWords);
@@ -192,8 +263,7 @@ form.addEventListener("submit", (event) => {
         sessionWords.splice(currentIndex, 0, remainingWords.shift());
       }
 
-      progress.textContent =
-        `Pula: ${sessionWords.length} słówek · Opanowane: ${masteredCount} · Wynik: ${correctAnswers}`;
+      progress.textContent = getProgressText();
     }
 
     feedback.textContent = "Dobrze!";
@@ -204,10 +274,7 @@ form.addEventListener("submit", (event) => {
     feedback.className = "feedback wrong";
   }
 
-  if (!studyMode) {
-    progress.textContent =
-      `Słówko ${currentIndex + 1} z ${sessionWords.length} · Wynik: ${correctAnswers}`;
-  }
+  progress.textContent = getProgressText();
   answerInput.disabled = true;
   submitButton.textContent = studyMode
     ? (sessionWords.length === 0 ? "Zobacz wynik" : "Dalej")
@@ -218,5 +285,5 @@ form.addEventListener("submit", (event) => {
 document.querySelector("#restart").addEventListener("click", () => {
   resultSection.hidden = true;
   setupSection.hidden = false;
-  categorySelect.focus();
+  categorySelect.querySelector("input")?.focus();
 });

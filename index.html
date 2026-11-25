@@ -3,10 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#202536">
   <title>Nauka słówek — niemiecki</title>
   <style>
     * {
       box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: dark;
     }
 
     body {
@@ -56,6 +62,8 @@
       padding: 12px;
       border: 1px solid #cbd1dc;
       border-radius: 8px;
+      background: white;
+      color: #202536;
       font: inherit;
     }
 
@@ -63,6 +71,49 @@
     select:focus {
       border-color: #536dfe;
       outline: 3px solid #536dfe30;
+    }
+
+    #category {
+      display: grid;
+      max-height: 220px;
+      overflow-y: auto;
+      gap: 6px;
+      padding: 8px;
+      border: 1px solid #cbd1dc;
+      border-radius: 8px;
+    }
+
+    .selected-count {
+      margin: 8px 0 0;
+      color: #667085;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .category-option {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      margin: 0;
+      padding: 8px 10px;
+      gap: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 400;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .category-option:active {
+      background: #eef1ff;
+    }
+
+    .category-option input {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      margin: 0;
+      padding: 0;
+      accent-color: #465cf5;
     }
 
     .prompt {
@@ -111,6 +162,11 @@
         padding: 24px;
       }
 
+      input,
+      select {
+        font-size: 16px;
+      }
+
       #exercise {
         padding-bottom: 72px;
       }
@@ -118,11 +174,13 @@
       #submit {
         position: fixed;
         left: 50%;
-        bottom: calc(var(--visual-viewport-bottom, 0px) + env(safe-area-inset-bottom) + 12px);
+        bottom: calc(var(--visual-viewport-bottom, 0px) + env(safe-area-inset-bottom, 0px) + 12px);
         z-index: 10;
         width: min(calc(100% - 48px), 432px);
         margin: 0;
         transform: translateX(-50%);
+        touch-action: manipulation;
+        will-change: bottom;
       }
     }
   </style>
@@ -131,8 +189,9 @@
   <main>
     <h1>Niemieckie słówka</h1>
     <section id="setup">
-      <label for="category">Wybierz kategorię:</label>
-      <select id="category"></select>
+      <label for="category">Wybierz kategorię lub kilka kategorii:</label>
+      <div id="category" role="group" aria-label="Kategorie słówek"></div>
+      <p class="selected-count" id="selected-count">Wybranych słówek: 0</p>
       <label for="mode">Wybierz tryb:</label>
       <select id="mode">
         <option value="study">Nauka</option>
