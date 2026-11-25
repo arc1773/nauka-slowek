@@ -15,28 +15,6 @@ const submitButton = document.querySelector("#submit");
 const resultTitle = document.querySelector("#result-title");
 const resultDetails = document.querySelector("#result-details");
 
-function updateVisualViewport() {
-  if (!window.visualViewport) return;
-
-  const visibleBottom = window.innerHeight -
-    (window.visualViewport.height + window.visualViewport.offsetTop);
-  const visibleHeight = window.visualViewport.height;
-  document.documentElement.style.setProperty(
-    "--visual-viewport-bottom",
-    `${Math.max(0, visibleBottom)}px`
-  );
-  document.documentElement.style.setProperty(
-    "--visual-viewport-height",
-    `${visibleHeight}px`
-  );
-}
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", updateVisualViewport);
-  window.visualViewport.addEventListener("scroll", updateVisualViewport);
-}
-updateVisualViewport();
-
 let sessionWords = [];
 let currentIndex = 0;
 let correctAnswers = 0;

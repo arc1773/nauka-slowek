@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-  <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#202536">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f3f5f9">
   <title>Nauka słówek — niemiecki</title>
   <style>
     * {
@@ -12,7 +12,7 @@
     }
 
     html {
-      color-scheme: dark;
+      color-scheme: light;
     }
 
     body {
@@ -168,19 +168,7 @@
       }
 
       #exercise {
-        padding-bottom: 72px;
-      }
-
-      #submit {
-        position: fixed;
-        left: 50%;
-        bottom: calc(var(--visual-viewport-bottom, 0px) + env(safe-area-inset-bottom, 0px) + 12px);
-        z-index: 10;
-        width: min(calc(100% - 48px), 432px);
-        margin: 0;
-        transform: translateX(-50%);
-        touch-action: manipulation;
-        will-change: bottom;
+        padding-bottom: 24px;
       }
     }
   </style>
@@ -212,7 +200,7 @@
       <p class="prompt" id="prompt"></p>
       <form id="answer-form">
         <label for="answer">Wpisz po niemiecku:</label>
-        <input id="answer" name="answer" autocomplete="off" required>
+        <input id="answer" name="answer" autocomplete="off" enterkeyhint="done" required>
         <button id="submit" type="submit">Sprawdź</button>
       </form>
       <p class="feedback" id="feedback" aria-live="polite"></p>
