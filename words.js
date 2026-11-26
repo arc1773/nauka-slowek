@@ -79,8 +79,8 @@ const vocabulary = [
   {
     title: "5.72 Dodatkowe prace czasowniki",
     vocabulary: {
-      "uważać, pilnować": "aufpassen",
-      "sprzątać": "aufräumen",
+      "uważać, pilnować": "auf|passen",
+      "sprzątać": "auf|räumen",
       "mieć pozwolenie": "dürfen",
       "zbierać (np. owoce)": "ernten",
       "pracować": "jobben",
@@ -97,8 +97,8 @@ const vocabulary = [
       "pracować jako kelner": "als Kellner arbeiten",
       "na tydzień": "pro Woche",
       "na dzień": "pro Tag",
-      "podreperować kieszonkowe": "das Taschengeld aufbessern",
-      "roznosić gazety": "Zeitungen austragen"
+      "podreperować kieszonkowe": "das Taschengeld auf|bessern",
+      "roznosić gazety": "Zeitungen aus|tragen"
     }
   },
 {
